@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte'
 	import { browser, dev } from '$app/environment'
+	import "../app.css";
 
 	// replaced dynamically
 	const date = '__DATE__'
@@ -25,6 +26,10 @@
 	<h1>SvelteKit PWA!</h1>
 
 	<div class="built">Built at: { date }</div>
+
+	<h1 class="text-3xl font-bold underline">
+		Hello world!
+	</h1>
 
 	<slot />
 
