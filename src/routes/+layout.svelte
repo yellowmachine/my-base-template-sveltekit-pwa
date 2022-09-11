@@ -1,6 +1,31 @@
+<script lang="ts" context="module">
+	//This only runs when the module first evaluates and before any rendering happens.
+	import { store as authStore } from '$lib/auth';
+	import type { Load } from '@sveltejs/kit';
+
+	export const load: Load = async ({ fetch }) => {
+		const res = await fetch('/api/auth/user');
+		const json = await res.json();
+		const { user } = json;
+
+		authStore.set({
+			loading: false,
+			user
+		});
+
+		return {
+			status: 200
+			// stuff: {
+			// 	user
+			// }
+		};
+	};
+</script>
+
 <script>
 	import { onMount } from 'svelte'
 	import { browser, dev } from '$app/environment'
+	import Header from '$lib/components/Header/index.svelte';
 
 	// replaced dynamically
 	const date = '__DATE__'
@@ -11,6 +36,14 @@
 	let ReloadPrompt
 	onMount(async () => {
 		enableManifest && (ReloadPrompt = (await import('$lib/components/ReloadPrompt.svelte')).default)
+
+		// XXX: Temp workaround due to:
+		// https://github.com/sveltejs/kit/issues/1198
+		//
+		// Also see:
+		// https://github.com/sveltejs/kit/issues/696
+		// https://github.com/sveltejs/kit/issues/672
+		await fetch('/api/auth/user');
 	})
 </script>
 
@@ -19,6 +52,8 @@
 		<link rel="manifest" href="/_app/manifest.webmanifest">
 	{/if}
 </svelte:head>
+
+<Header />
 
 <main>
 	<img src="/favicon.svg" alt="PWA Logo" width="60" height="60"/>
@@ -29,6 +64,10 @@
 	<slot />
 
 </main>
+
+<footer>
+	<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+</footer>
 
 {#if ReloadPrompt}
 	<svelte:component this={ReloadPrompt} />
@@ -44,7 +83,7 @@
 		padding: 1em;
 		margin: 0 auto;
 		}
-		h1 {
+	h1 {
 		color: #ff3e00;
 		text-transform: uppercase;
 		font-size: 4rem;
@@ -57,5 +96,20 @@
 		h1 {
 			max-width: none;
 		}
+		footer {
+			padding: 40px 0;
+		}
+	}
+
+	footer {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		padding: 40px;
+	}
+
+	footer a {
+		font-weight: bold;
 	}
 </style>
