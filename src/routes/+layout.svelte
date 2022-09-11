@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte'
-	import { browser, dev } from '$app/env'
+	import { browser, dev } from '$app/environment'
 
 	// replaced dynamically
 	const date = '__DATE__'
